@@ -3,6 +3,9 @@ using Microsoft.EntityFrameworkCore;
 using Core.Interfaces;
 using API.Helpers;
 using API.Middleware;
+using Microsoft.AspNetCore.Mvc;
+using System.Linq;
+using API.Errors;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -20,7 +23,22 @@ builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo { Title = "API", Version = "v1" });
 });
-
+builder.Services.Configure<ApiBehaviorOptions>(options =>
+{
+    options.InvalidModelStateResponseFactory = actionContext =>
+    {
+        var errors = actionContext.ModelState
+         .Where(e => e.Value.Errors.Count > 0)
+         .SelectMany(x => x.Value.Errors)
+         .Select(e => e.ErrorMessage)
+         .ToArray();
+        var errorResponse = new ApiValidationErrorResponse
+        {
+            Errors = errors
+        };
+        return new BadRequestObjectResult(errorResponse);
+    };
+});
 var app = builder.Build();
 using (var scope = app.Services.CreateScope())
 {
