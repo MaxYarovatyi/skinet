@@ -2,6 +2,7 @@ using Infrastructure.Data;
 using Core.Entities;
 using Core.Specifications;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.EntityFrameworkCore;
 using Core.Interfaces;
 using API.Dtos;
@@ -26,6 +27,7 @@ namespace API.Controllers
             _productsBrandRepo = productBrandRepo;
 
         }
+
         [HttpGet]
         public async Task<ActionResult<Pagination<ProductToReturnDto>>> GetProducts(
             [FromQuery] ProductSpecParams productParams)
@@ -41,6 +43,7 @@ namespace API.Controllers
             var data = _mapper.Map<IReadOnlyList<Product>, IReadOnlyList<ProductToReturnDto>>(products);
             return Ok(new Pagination<ProductToReturnDto>(productParams.PageIndex, productParams.PageSize, totalItems, data));
         }
+
         [HttpGet("{id}")]
         public async Task<ActionResult<ProductToReturnDto>> GetProduct(int id)
         {
@@ -49,11 +52,13 @@ namespace API.Controllers
             if (product == null) return NotFound(new ApiResponse(404));
             return _mapper.Map<Product, ProductToReturnDto>(product);
         }
+
         [HttpGet("brands")]
         public async Task<ActionResult<List<ProductBrand>>> GetProductBrand()
         {
             return Ok(await _productsBrandRepo.ListAllAsync());
         }
+
         [HttpGet("types")]
         public async Task<ActionResult<List<ProductType>>> GetProductTypes()
         {
