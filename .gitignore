@@ -1,5 +1,29 @@
-obj
-bin
-appsettings.json
+# .NET build output
+bin/
+obj/
+publish/
+*.user
+*.suo
+.vs/
+.idea/
+
+# Node / Angular
+node_modules/
+dist/
+.angular/
+
+# Local databases and caches
 *.db
+*.db-shm
+*.db-wal
 *.rdb
+
+# Secrets and local settings
+.env
+.env.*
+*.pfx
+appsettings.Local.json
+
+# OS
+.DS_Store
+Thumbs.db
